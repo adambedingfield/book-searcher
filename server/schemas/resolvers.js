@@ -1,6 +1,6 @@
 const { AuthenticationError } = require('apollo-server-express');
 const { signToken } = require('../utils/auth');
-const { User, Book } = require('../models');
+const { User } = require('../models');
 
 const resolvers = {
     Query: {
@@ -58,7 +58,7 @@ const resolvers = {
 
             throw new AuthenticationError('Not logged in.')
         },
-        // remove book from user's book list
+        
         deleteBook: async (parent, { bookId }, context) => {
             if (context.user) {
                 const updatedUser = await User.findOneAndUpdate(
