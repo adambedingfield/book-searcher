@@ -1,6 +1,6 @@
-const { AuthenticationError } = require('apollo-server-express');
-const { signToken } = require('../utils/auth');
-const { User } = require('../models');
+const { User, Book } = require('../models')
+const { AuthenticationError } = require('apollo-server-express')
+const { signToken } = require('../utils/auth')
 
 const resolvers = {
     Query: {
@@ -14,7 +14,7 @@ const resolvers = {
                 return userData;
             }
 
-            throw new AuthenticationError('Not logged in.')
+            throw new AuthenticationError('You need to log in!')
         },
     },
 
@@ -30,14 +30,14 @@ const resolvers = {
 
             // case of no user found
             if (!user) {
-                throw new AuthenticationError("No user found.");
+                throw new AuthenticationError("No user with that email!");
             }
 
             // check password
             const correctPw = await user.isCorrectPassword(password)
 
             if(!correctPw) {
-                throw new AuthenticationError('Incorrect credentials.')
+                throw new AuthenticationError('Your password or email may be wrong')
             }
 
             const token = signToken(user);
@@ -56,9 +56,9 @@ const resolvers = {
                 return updatedUser
             }
 
-            throw new AuthenticationError('Not logged in.')
+            throw new AuthenticationError('You need to log in!')
         },
-        
+        // remove book from user's book list
         deleteBook: async (parent, { bookId }, context) => {
             if (context.user) {
                 const updatedUser = await User.findOneAndUpdate(
@@ -69,9 +69,9 @@ const resolvers = {
                 return updatedUser
             }
 
-            throw new AuthenticationError('Not logged in.')
+            throw new AuthenticationError('You need to log in!')
         }
     }
 }
 
-module.exports = resolvers;
+module.exports = resolvers
