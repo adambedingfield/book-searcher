@@ -1,18 +1,21 @@
-import { useQuery, useMutation } from '@apollo/client';
 import React from 'react';
 import { Jumbotron, Container, CardColumns, Card, Button } from 'react-bootstrap';
-
-//import { getMe, deleteBook } from '../utils/API';
 import Auth from '../utils/auth';
 import { removeBookId } from '../utils/localStorage';
+
+// delete book mutation, query self imports
+import { useQuery, useMutation } from '@apollo/client';
 import { DELETE_BOOK } from '../utils/mutations';
 import { QUERY_ME } from '../utils/queries';
 
 const SavedBooks = () => {
-  const { loading, data } = useQuery(QUERY_ME) 
-  const [deleteBook, { error }] = useMutation(DELETE_BOOK)
+  // queries data for self
+  const { loading, data } = useQuery(QUERY_ME);
+  // mutation for deleting a book from saved books
+  const [deleteBook, { error }] = useMutation(DELETE_BOOK);
 
-  const userData = data?.me || {}
+  // stores user data
+  const userData = data?.me || {};
 
   // removed useEffect()
 
@@ -33,7 +36,7 @@ const SavedBooks = () => {
       console.error(err);
     }
   };
-
+  // Display if no data has been displayed
   if (loading) {
     return <h2>LOADING...</h2>;
   }
