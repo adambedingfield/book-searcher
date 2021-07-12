@@ -5,14 +5,16 @@ import { Jumbotron, Container, CardColumns, Card, Button } from 'react-bootstrap
 //import { getMe, deleteBook } from '../utils/API';
 import Auth from '../utils/auth';
 import { removeBookId } from '../utils/localStorage';
-import { REMOVE_BOOK } from '../utils/mutations';
-import { GET_ME } from '../utils/queries';
+import { DELETE_BOOK } from '../utils/mutations';
+import { QUERY_ME } from '../utils/queries';
 
 const SavedBooks = () => {
-  const { loading, data } = useQuery(GET_ME) 
-  const [deleteBook, { error }] = useMutation(REMOVE_BOOK)
+  const { loading, data } = useQuery(QUERY_ME) 
+  const [deleteBook, { error }] = useMutation(DELETE_BOOK)
 
   const userData = data?.me || {}
+
+  // removed useEffect()
 
   // create function that accepts the book's mongo _id value as param and deletes the book from the database
   const handleDeleteBook = async (bookId) => {
@@ -26,15 +28,12 @@ const SavedBooks = () => {
       const { data } = await deleteBook({
         variables: { bookId: bookId }
       });
-
-      // upon success, remove book's id from localStorage
       removeBookId(bookId);
     } catch (err) {
       console.error(err);
     }
   };
 
-  // if data isn't here yet, say so
   if (loading) {
     return <h2>LOADING...</h2>;
   }

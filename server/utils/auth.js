@@ -6,8 +6,7 @@ const expiration = '2h';
 
 module.exports = {
   // function for our authenticated routes
-  authMiddleware: function ({ req }) {
-    console.log(req)
+  authMiddleware: function ({ req, res, next }) {
     // allows token to be sent via  req.query or headers
     let token = req.body.token || req.query.token || req.headers.authorization;
 
@@ -27,9 +26,7 @@ module.exports = {
     } catch {
       console.log('Invalid token');
     }
-
-    // return updated request
-    return req
+    return req;
   },
   signToken: function ({ username, email, _id }) {
     const payload = { username, email, _id };

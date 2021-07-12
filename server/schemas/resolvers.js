@@ -1,12 +1,11 @@
-const { User, Book } = require('../models')
 const { AuthenticationError } = require('apollo-server-express')
 const { signToken } = require('../utils/auth')
+const { User} = require('../models')
 
 const resolvers = {
     Query: {
         // 
         me: async (parent, args, context) => {
-            // only need to query logged in user to bring up their booklist
             if (context.user) {
                 const userData = await User.findOne({ _id: context.user._id })
                                     .select('-__v -password')
@@ -14,7 +13,7 @@ const resolvers = {
                 return userData;
             }
 
-            throw new AuthenticationError('You need to log in!')
+            throw new AuthenticationError('Not logged in.')
         },
     },
 
@@ -28,16 +27,14 @@ const resolvers = {
         login: async (parent, {email, password}) => {
             const user = await User.findOne({ email });
 
-            // case of no user found
             if (!user) {
-                throw new AuthenticationError("No user with that email!");
+                throw new AuthenticationError("No user found.");
             }
 
-            // check password
             const correctPw = await user.isCorrectPassword(password)
 
             if(!correctPw) {
-                throw new AuthenticationError('Your password or email may be wrong')
+                throw new AuthenticationError('Incorrect credentials.')
             }
 
             const token = signToken(user);
@@ -56,9 +53,8 @@ const resolvers = {
                 return updatedUser
             }
 
-            throw new AuthenticationError('You need to log in!')
+            throw new AuthenticationError('Not logged in.')
         },
-        // remove book from user's book list
         deleteBook: async (parent, { bookId }, context) => {
             if (context.user) {
                 const updatedUser = await User.findOneAndUpdate(
@@ -69,9 +65,9 @@ const resolvers = {
                 return updatedUser
             }
 
-            throw new AuthenticationError('You need to log in!')
+            throw new AuthenticationError('Not logged in.')
         }
     }
 }
 
-module.exports = resolvers
+module.exports = resolvers;
